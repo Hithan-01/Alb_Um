@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import java.util.Arrays;
 
 @Configuration
@@ -34,29 +33,26 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .authorizeHttpRequests(authorizeRequests ->
-                authorizeRequests
-                    .requestMatchers("/login", "/resources/**").permitAll()
-                    .requestMatchers("/usuarios/**").hasAnyRole("Alumno", "Admin", "Coach")
-                    .anyRequest().authenticated()
+            .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                .requestMatchers("/login", "/resources/**").permitAll()
+                .requestMatchers("/usuarios/**").hasAnyRole( "Admin", "Coach")
+                .requestMatchers("/admin/**").hasRole("Admin")
+                .requestMatchers("/coach/**").hasRole("Coach")
+                .anyRequest().authenticated()
             )
-            .formLogin(formLogin ->
-                formLogin
-                    .loginPage("/login")
-                    .successHandler(customAuthentication)
-                    .permitAll()
+            .formLogin(formLogin -> formLogin
+                .loginPage("/login")
+                .successHandler(customAuthentication)
+                .permitAll()
             )
-            .logout(logout -> 
-                logout
-                    .permitAll()
-            );
+            .logout(logout -> logout.permitAll());
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://127.0.0.1:8080")); // Ajusta los orígenes permitidos según sea necesario
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://127.0.0.1:8080")); // Ajusta los orígenes permitidos según sea necesario
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         configuration.setAllowCredentials(true);

@@ -13,6 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/usuarios")
+@CrossOrigin(origins = "http://localhost:8080") // Cambia a la URL de tu frontend
 public class Controlador_usuario {
     @Autowired
     private Repositorio_usuario repositorio_usuario;
